@@ -1,0 +1,90 @@
+Launch EC2 Instance with cli
+paste in one line:
+
+aws ec2 run-instances --image-id ami-005fc0f236362e99f --count 1 --instance-type t2.micro --key-name devops-key --security-group-ids sg-01602c5742dabaead --subnet-id subnet-02cf3a4216629db5d --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=CLI-EC2-Instance}]'
+
+
+2. Describe the Instance (Get it's public IP) copy instance ID and change here
+aws ec2 describe-instances --instance-ids i-0b4c3ea2e50a142f7
+
+3. Attach an IAM Role with S3 Access to the EC2 Instance
+
+First, create an IAM role with AmazonS3ReadOnlyAccess permissions, then attach the role to your instance.
+
+than go to Ec2-action-security-modify IAM role- attach new created role to EC2 (VERY IMPORTNANT!!) 
+
+Step 2: Set up S3 Bucket
+Create S3 Bucket
+
+aws s3api create-bucket --bucket akyl-dev-employees --region us-east-1
+
+Upload employees.json file to S3 Bucket
+aws s3 cp employees.json s3://akyl-dev-employees/employees.json
+
+Click on the Security Group, then choose the Inbound Rules tab, and click Edit inbound rules.
+Source: Choose your IP (or 0.0.0.0/0 if you want to allow access from any IP, but note that this is less secure).
+Save the Rule Changes.
+edit inbound rules from ec2 open tcp 8080 for all  0;0;0;0;
+adding more inbound rules tcp 5000 ipv4
+tcp=8080
+tcp=22
+tcp=80
+tcp=5000
+tcp=443
+
+With this setup:
+
+fetch_data.py fetches and displays data from S3, which can be used for testing.
+app.py serves the data over HTTP on port 5000, accessible via the EC2’s public IP.
+You should now be able to access your Flask server on http://your-ec2-public-ip:5000/employees
+After SSHing into the EC2 instance, you can use the following Python script to retrieve data from the S3 bucket.
+
+
+copy from ec2 instance connect and copy:
+ssh -i "devops-key.pem" ubuntu@ec2-3-86-85-159.compute-1.amazonaws.com
+
+
+Install Boto3 (AWS SDK for Python)
+
+sudo apt update
+sudo apt install -y python3-pip
+pip3 install boto3
+pip3 install flask
+pip3 install flask-cors
+
+Choose a Directory for the Files:
+
+You can use the home directory or create a new directory, such as ~/employee-directory.
+For example, to create a directory and move into it:
+
+mkdir ~/employee-directory
+cd ~/employee-directory
+Transfer the Files to EC2:
+
+generate key to ssh to github repo
+git clone from git repository
+
+If you’re uploading the files from your local machine, you can use scp to transfer them:
+
+scp -i YourKeyPair.pem fetch_data.py app.py ec2-user@your-ec2-public-ip:~/employee-directory/
+
+Alternatively, create the files directly in the EC2 instance with a text editor, such as nano or vim:
+
+vim fetch_data.py
+# Copy the contents of fetch_data.py here, then save and exit
+
+1. Save fetch_data.py and app.py Files on EC2
+SSH into your EC2 instance:
+
+cd to frontend folder - sudo vim sript.js-paste- ec2public ip - ec2-54-159-228-205.compute-1.amazonaws.com -save
+
+go  to http:// ec2-54-159-228-205.compute-1.amazonaws.com:8080 and see EMPLOYEE DRIECTORY
+back to folder ec2 project and run python3 app.py
+Step 3: Python Script on EC2 to Retrieve Data from S3
+run python3 fetch-data.py
+
+
+
+open terminal one cd to ec2 folder run: ls (backEND)
+open terminal two cd ec2/frontEND run : python3 -m http.server 8080
+check server will come with employee names

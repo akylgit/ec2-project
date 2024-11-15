@@ -1,0 +1,10 @@
+{
+    "employees": [
+      {"id": 1, "name": "Alice Johnson", "position": "Software Engineer", "department": "Engineering"},
+      {"id": 2, "name": "Bob Smith", "position": "DevOps Engineer", "department": "Operations"},
+      {"id": 3, "name": "Carol White", "position": "Product Manager", "department": "Product"},
+      {"id": 4, "name": "David Brown", "position": "Data Scientist", "department": "Data"},
+      {"id": 5, "name": "Emma Davis", "position": "UX Designer", "department": "Design"}
+    ]
+  }
+  
